@@ -11,6 +11,7 @@ import java.util.List;
 public class UserServiceImpl implements UserService{
     @Autowired
     UserMapper userMapper;
+
     @Override
     public HashMap<String, Object> selectByUsername(String username) {
         return userMapper.selectByUsername(username);
