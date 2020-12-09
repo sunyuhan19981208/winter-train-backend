@@ -1,0 +1,29 @@
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+server:
+  port: 8600
+spring:
+  redis:
+    database: 0
+    host: 39.107.84.0
+    port: 6379
+    password:
+  application:
+    name: service-user
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://rm-bp149958e5hvnwfazko.mysql.rds.aliyuncs.com:3306/winter_train_sys
+    username: suser
+    password: One11111
+#  datasource:
+#    driver-class-name: com.mysql.jdbc.Driver
+#    url: jdbc:mysql://127.0.0.1:3306/dbem
+#    username: root
+#    password: one11111
+mybatis:
+  type-aliases-package: com.example.demo.entity
+
+
+
