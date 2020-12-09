@@ -68,20 +68,21 @@ public class UserController {
     }
     @RequestMapping(value = "getRank",produces = {MediaType.APPLICATION_JSON_VALUE})
     public HashMap<String,Object>getRank(@Param("userId")int userId){
-        List<HashMap<String,Object>>li=userService.getRank(userId);
-        int yourRank;
+        List<HashMap<String,Object>>li=userService.getRank();
+        HashMap<String,Object> yourInfo=new HashMap<>();
         int cnt=0;
         for(HashMap<String,Object>user:li){
             cnt++;
             if((int)user.get("userId")==userId)break;
         }
-        yourRank=cnt;
+        yourInfo.put("rank", cnt);
+        yourInfo.put("data", li.get(cnt - 1));
         List<HashMap<String,Object>>res;
         if(li.size()>10)res=li.subList(0,9);
         else res=li;
         return new HashMap<String,Object>(){
             {
-                put("yourRank",yourRank);
+                put("yourRank",yourInfo);
                 put("allRank",res);
             }
         };
@@ -152,5 +153,16 @@ public class UserController {
                 }
             };
         }
+    }
+
+    @RequestMapping(value = "getAllMyInfo",produces = {MediaType.APPLICATION_JSON_VALUE})
+    public HashMap<String, Object> allMyInfo(@Param("userId")int userId){
+        HashMap<String,Object>user=userService.selectByUserId(userId);
+        return new HashMap<String ,Object>(){
+            {
+                put("respCode", 1);
+                put("userInfo",user);
+            }
+        };
     }
 }

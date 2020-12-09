@@ -15,6 +15,10 @@ public interface UserMapper {
     List<HashMap<String,Object>>getRank();
     @Select("select * from user where username= #{username}")
     HashMap<String,Object>selectByUsername(@Param("username")String username);
+
+    @Select("select * from user where userId= #{userId}")
+    HashMap<String,Object>selectByUserId(@Param("userId")int userId);
+
     @Select("insert into user(username,userId,password,score,faceId) values(#{username},#{userId},#{password},0,#{faceId})")
     void insertIntoUser(@Param("username")String username,@Param("password")String password,
                                          @Param("userId")int userId,@Param("faceId")int faceId);

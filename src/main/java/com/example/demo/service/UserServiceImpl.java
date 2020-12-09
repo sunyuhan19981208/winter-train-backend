@@ -17,6 +17,11 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
+    public HashMap<String, Object> selectByUserId(int userId) {
+        return userMapper.selectByUserId(userId);
+    }
+
+    @Override
     public void insertIntoUser(HashMap<String, Object> user) {
         Integer maxId=userMapper.getMaxUserId();
         int userId=1;
@@ -59,7 +64,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public List<HashMap<String, Object>> getRank(int userId) {
+    public List<HashMap<String, Object>> getRank() {
 
         return userMapper.getRank();
     }
