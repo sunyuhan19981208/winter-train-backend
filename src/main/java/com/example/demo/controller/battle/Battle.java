@@ -1,5 +1,6 @@
 package com.example.demo.controller.battle;
 
+import java.util.HashMap;
 import java.util.Random;
 
 public class Battle {
@@ -99,4 +100,20 @@ public class Battle {
     public void setGuestId(int guestId) {
         this.guestId = guestId;
     }
+
+    public static Battle fromRoom(HashMap<String,Object> room){
+        Battle battle = new Battle();
+        battle.setId(((Number)room.getOrDefault("roomId",0)).intValue());
+        battle.setCreatorId(((Number)room.getOrDefault("hostId",-1)).intValue());
+        battle.setCreatorCredits(((Number)room.getOrDefault("hostScore",0)).intValue());
+        battle.setCreatorQuestionIndex(((Number)room.getOrDefault("hostIndex",0)).intValue());
+
+        battle.setGuestId(((Number)room.getOrDefault("guestId",-1)).intValue());
+        battle.setGuestCredits(((Number)room.getOrDefault("guestScore",0)).intValue());
+        battle.setGuestQuestionIndex(((Number)room.getOrDefault("guestIndex",0)).intValue());
+
+        return battle;
+    }
+
+
 }

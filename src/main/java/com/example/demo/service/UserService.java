@@ -6,12 +6,12 @@ import java.util.List;
 public interface UserService {
     HashMap<String,Object>selectByUsername(String username);
     public HashMap<String, Object> selectByUserId(int userId);
-    void insertIntoUser(HashMap<String,Object>user);
+    int insertIntoUser(HashMap<String,Object>user);
     int insertIntoRoom(int hostId);
     HashMap<String,Object>selectRoomById(int roomId);
     void enterRoom(int guestId,int roomId);
     void quitRoom(int roomId);
-    void updateHostScore(int roomId,int score);
+    void updateHostScore(int curScore,int roomId);
     void updateGuestScore(int roomId,int score);
     List<HashMap<String,Object>>getRank();
     void endGame(int roomId);

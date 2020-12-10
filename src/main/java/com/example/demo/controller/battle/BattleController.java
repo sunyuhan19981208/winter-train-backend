@@ -2,6 +2,7 @@ package com.example.demo.controller.battle;
 
 import com.example.demo.service.QuestionService;
 import com.example.demo.service.UserService;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,90 +17,93 @@ public class BattleController {
     @Autowired
     QuestionService questionService;
 
-//    @RequestMapping(path = "/battle/peek")
-//    public Map<String, Battle> peek() {
-//        return BattleRepo.getBattles();
-//    }
-//
-//    @RequestMapping(path = "/battle/clear")
-//    public Map<String, Battle> clearBattles() {
-//        BattleRepo.clear();
-//        return BattleRepo.getBattles();
-//    }
+    @RequestMapping(path = "/battle/peek")
+    public Battle peek(int id) {
+        HashMap<String, Object> room = userService.selectRoomById(id);
+        return Battle.fromRoom(room);
+    }
 
     @RequestMapping(path = "/battle/new")
-    public Battle createNewBattle(HttpSession session, int id, @RequestParam(defaultValue = "no") String test) {
-        HashMap<String, Object> byUsername = userService.selectRoomById(id);
-
+    public Battle createNewBattle(int id) {
+        int roomId = userService.insertIntoRoom(id);
+        questionService.insertQuestionsInRoom(roomId);
 
         Battle battle = new Battle(id);
-        if ("yes".equals(test)) {
-            battle.setId(123);
-        }
+        battle.setId(roomId);
 
-        BattleRepo.put(battle.getId(), battle);
-
+//        BattleRepo.put(battle.getId(), battle);
         return battle;
     }
 
     private boolean isCreator(int userId, int battleId) {
-        Battle battle = BattleRepo.get(battleId);
-        return battle.getCreatorId() == userId;
+        HashMap<String, Object> room = userService.selectRoomById(battleId);
+        Number hostId = (Number) room.get("hostId");
+        return hostId.intValue() == userId;
     }
 
     @RequestMapping(path = "/battle/saveScore")
     public HashMap<String, Object> saveScore(int id, int battleId) {
-        Battle battle = BattleRepo.get(battleId);
+        HashMap<String, Object> room = userService.selectRoomById(battleId);
+        Battle battle = Battle.fromRoom(room);
+
         HashMap<String, Object> user = userService.selectByUserId(id);
-        Number scoreNumber = (Number) user.get("score");
+        if (user == null) {
+            return new HashMap<String, Object>() {
+                {
+                    put("respCode", 2);
+                    put("errorMsg", "No such user id: " + id);
+                }
+            };
+        }
+        Number scoreNumber = (Number) user.getOrDefault("score", 0);
         int score = scoreNumber.intValue();
         if (isCreator(id, battleId)) {
-            score += battle.getCreatorCredits();
+            score = (int) battle.getCreatorCredits();
             userService.updateHostScore(battleId, score);
         } else {
-            score += battle.getGuestCredits();
+            score = (int) battle.getGuestCredits();
             userService.updateGuestScore(battleId, score);
         }
-        return  userService.selectByUserId(id);
+        return userService.selectByUserId(id);
     }
 
     @RequestMapping(path = "/battle/step_in")
     public Battle stepIn(int id, int battleId) {
-        Battle battle = BattleRepo.get(battleId);
-        battle.setGuestId(id);
-        return battle;
+        userService.enterRoom(id, battleId);
+        HashMap<String, Object> room = userService.selectRoomById(battleId);
+        return Battle.fromRoom(room);
     }
 
     @RequestMapping(path = "/battle/refresh")
     public Battle getBattleInfo(int id) {
-        return BattleRepo.get(id);
+        HashMap<String, Object> room = userService.selectRoomById(id);
+        return Battle.fromRoom(room);
     }
 
     @RequestMapping(path = "/battle/questions")
     public HashMap<String, String> getQuestions(String id) {
-        HashMap<String, String> ret = new HashMap<>();
-        ret.put("apple", "苹果");
-        ret.put("orange", "橙子");
-        ret.put("banana", "香蕉");
-        ret.put("peach", "桃子");
-        return ret;
+
+        return new HashMap<String, String>() {
+            {
+                put("apple", "苹果");
+                put("orange", "橙子");
+                put("banana", "香蕉");
+                put("peach", "桃子");
+            }
+        };
     }
 
     @RequestMapping(path = "/battle/update/credit")
     public void updateCredit(int user, int battle, int total) {
-        Battle battleObject = BattleRepo.get(battle);
-        if (user == battleObject.getCreatorId()) {
-            battleObject.setCreatorCredits(total);
-            battleObject.increaseCreatorQuestionIndex();
+        if (isCreator(user, battle)) {
+            userService.updateHostScore(total, battle);
         } else {
-            battleObject.setGuestCredits(total);
-            battleObject.increaseGuestQuestionIndex();
+            userService.updateGuestScore(total, battle);
         }
     }
 
     @RequestMapping(path = "/battle/update/finish")
     public void reportFinish(int battleId, int id) {
-        BattleRepo.remove(battleId);
+//        BattleRepo.remove(battleId);
     }
-
 }

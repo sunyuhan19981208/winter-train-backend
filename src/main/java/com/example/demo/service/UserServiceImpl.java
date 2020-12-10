@@ -23,11 +23,12 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public void insertIntoUser(HashMap<String, Object> user) {
+    public int insertIntoUser(HashMap<String, Object> user) {
         Integer maxId=userMapper.getMaxUserId();
         int userId=1;
         if(maxId!=null)userId=maxId+1;
         userMapper.insertIntoUser((String)user.get("username"),(String)user.get("password"),userId,(int)user.get("faceId"));
+        return userId;
     }
 
     @Override
@@ -55,8 +56,8 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public void updateHostScore(int roomId, int score) {
-        userMapper.updateHostScore(roomId,score);
+    public void updateHostScore(int curScore,int roomId) {
+        userMapper.updateHostScore(curScore,roomId);
     }
 
     @Override
