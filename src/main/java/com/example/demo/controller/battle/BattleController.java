@@ -2,11 +2,12 @@ package com.example.demo.controller.battle;
 
 import com.example.demo.service.QuestionService;
 import com.example.demo.service.UserService;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 
 @RestController
@@ -31,7 +32,6 @@ public class BattleController {
         Battle battle = new Battle(id);
         battle.setId(roomId);
 
-//        BattleRepo.put(battle.getId(), battle);
         return battle;
     }
 
@@ -61,10 +61,10 @@ public class BattleController {
         Number scoreNumber = (Number) user.getOrDefault("score", 0);
         int score = scoreNumber.intValue();
         if (isCreator(id, battleId)) {
-            score = (int) battle.getCreatorCredits();
+            score += (int) battle.getCreatorCredits();
             userService.updateHostScore(battleId, score);
         } else {
-            score = (int) battle.getGuestCredits();
+            score += (int) battle.getGuestCredits();
             userService.updateGuestScore(battleId, score);
         }
         return userService.selectByUserId(id);
@@ -107,6 +107,5 @@ public class BattleController {
 
     @RequestMapping(path = "/battle/update/finish")
     public void reportFinish(int battleId, int id) {
-//        BattleRepo.remove(battleId);
     }
 }

@@ -16,13 +16,14 @@ import java.util.List;
 public class QuestionController {
     @Autowired
     QuestionService questionService;
-    @RequestMapping(value = "getQuestions",produces = {MediaType.APPLICATION_JSON_VALUE})
-    public HashMap<String,Object>getQuestions(@Param("roomId")int roomId){
-        List<HashMap<String,Object>>questionList= questionService.getQuestionList(roomId);
-        return new HashMap<String,Object>(){
+
+    @RequestMapping(value = "getQuestions", produces = {MediaType.APPLICATION_JSON_VALUE})
+    public HashMap<String, Object> getQuestions(@Param("roomId") int roomId) {
+        List<HashMap<String, Object>> questionList = questionService.getQuestionList(roomId);
+        return new HashMap<String, Object>() {
             {
-                put("respCode",1);
-                put("data",questionList);
+                put("respCode", 1);
+                put("data", questionList);
             }
         };
     }
