@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @CrossOrigin
@@ -22,6 +21,9 @@ public class QuestionController {
 
     @RequestMapping(value = "getQuestions", produces = {MediaType.APPLICATION_JSON_VALUE})
     public HashMap<String, Object> getQuestions(@Param("roomId") int roomId) {
+
+        //TODO
+
         List<Question> questionList = questionService.getQuestionList(roomId);
 
         ArrayList<Object> prettyQuestionList = new ArrayList<>(questionList.size());

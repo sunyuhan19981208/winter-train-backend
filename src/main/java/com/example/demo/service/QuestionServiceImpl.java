@@ -11,13 +11,16 @@ import java.util.*;
 public class QuestionServiceImpl implements QuestionService {
     @Autowired
     QuestionMapper questionMapper;
+
     @Override
     public List<Question> getQuestionList(int roomId) {
-        List<String>stringList=Arrays.asList(questionMapper.getQuestionsByRoomId(roomId).split(","));
-        List<Integer>li=new LinkedList<>();
-        for(String it:stringList)li.add(Integer.parseInt(it));
-        List<Question>res=new LinkedList<>();
-        for(Integer qid:li){
+
+
+        List<String> stringList = Arrays.asList(questionMapper.getQuestionsByRoomId(roomId).split(","));
+        List<Integer> li = new LinkedList<>();
+        for (String it : stringList) li.add(Integer.parseInt(it));
+        List<Question> res = new LinkedList<>();
+        for (Integer qid : li) {
             res.add(questionMapper.selectQuestionById(qid));
         }
         return res;
@@ -25,17 +28,26 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public void insertQuestionsInRoom(int roomId) {
-        int qSize=questionMapper.getSize();
-        int max=qSize;
-        int min=1;
-        Set<Integer> s=new HashSet<>();
-        while(s.size()<10){
-            int qid=(int) (Math.random()*(max-min)+min);
-            if(!s.contains(qid))s.add(qid);
+        int qSize = questionMapper.getSize();
+        int min = 1;
+        List<Integer> set = new ArrayList<>(10);
+        Random random = new Random(System.currentTimeMillis());
+
+        while (set.size() < 10) {
+            int i = random.nextInt(qSize) + 1;
+            if (!set.contains(i)) {
+                set.add(i);
+            }
         }
-        String res="";
-        for(Integer qid:s)res+=qid+",";
-        res=res.substring(0,res.length()-1);
-        questionMapper.insertQuestionsInRoom(roomId,res);
+
+
+        StringBuilder res = new StringBuilder();
+        for (Integer qid : set) {
+            res.append(qid).append(",");
+        }
+        ;
+        res = new StringBuilder(res.substring(0, res.length() - 1));
+        System.out.println(res);
+        questionMapper.insertQuestionsInRoom(roomId, res.toString());
     }
 }
