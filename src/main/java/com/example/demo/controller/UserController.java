@@ -82,7 +82,7 @@ public class UserController {
         yourInfo.put("rank", cnt);
         yourInfo.put("data", li.get(cnt - 1));
         List<HashMap<String, Object>> res;
-        if (li.size() > 10) res = li.subList(0, 9);
+        if (li.size() > 10) res = li.subList(0, 10);
         else res = li;
         return new HashMap<String, Object>() {
             {
