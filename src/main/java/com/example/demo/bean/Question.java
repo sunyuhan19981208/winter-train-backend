@@ -31,6 +31,17 @@ public class Question {
         return choices;
     }
 
+    @Override
+    public String toString() {
+        return "Question{" +
+                "qid=" + qid +
+                ", desp='" + desp + '\'' +
+                ", choices='" + choices + '\'' +
+                ", answer='" + answer + '\'' +
+                ", chinese='" + chinese + '\'' +
+                '}';
+    }
+
     public void setChoices(String choices) {
         this.choices = choices;
     }

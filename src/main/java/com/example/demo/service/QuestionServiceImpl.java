@@ -29,7 +29,7 @@ public class QuestionServiceImpl implements QuestionService {
         int max=qSize;
         int min=1;
         Set<Integer> s=new HashSet<>();
-        while(s.size()<5){
+        while(s.size()<10){
             int qid=(int) (Math.random()*(max-min)+min);
             if(!s.contains(qid))s.add(qid);
         }
