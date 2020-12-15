@@ -97,12 +97,18 @@ public class BattleController {
     }
 
     @RequestMapping(path = "/battle/update/credit")
-    public void updateCredit(int user, int battle, int total) {
+    public HashMap<String, Object> updateCredit(int user, int battle, int total) {
         if (isCreator(user, battle)) {
             userService.updateHostScore(total, battle);
         } else {
             userService.updateGuestScore(total, battle);
         }
+        return new HashMap<String,Object>(){
+            {
+                put("respCode", 1);
+                put("msg","success");
+            }
+        };
     }
 
     @RequestMapping(path = "/battle/update/finish")
