@@ -1,9 +1,11 @@
 package com.example.demo.service;
 
-import java.util.HashMap;
+
+import com.example.demo.bean.Question;
+
 import java.util.List;
 
 public interface QuestionService {
-    List<HashMap<String,Object>>getQuestionList(int roomId);
+    List<Question> getQuestionList(int roomId);
     void insertQuestionsInRoom(int roomId);
 }

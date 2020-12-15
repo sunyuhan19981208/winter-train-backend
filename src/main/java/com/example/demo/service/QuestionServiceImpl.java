@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.bean.Question;
 import com.example.demo.mapper.QuestionMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,11 +12,11 @@ public class QuestionServiceImpl implements QuestionService {
     @Autowired
     QuestionMapper questionMapper;
     @Override
-    public List<HashMap<String, Object>> getQuestionList(int roomId) {
+    public List<Question> getQuestionList(int roomId) {
         List<String>stringList=Arrays.asList(questionMapper.getQuestionsByRoomId(roomId).split(","));
         List<Integer>li=new LinkedList<>();
         for(String it:stringList)li.add(Integer.parseInt(it));
-        List<HashMap<String,Object>>res=new LinkedList<>();
+        List<Question>res=new LinkedList<>();
         for(Integer qid:li){
             res.add(questionMapper.selectQuestionById(qid));
         }

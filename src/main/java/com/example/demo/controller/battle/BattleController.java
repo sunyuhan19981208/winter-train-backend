@@ -43,7 +43,7 @@ public class BattleController {
 
     @RequestMapping(path = "/battle/saveScore")
     public HashMap<String, Object> saveScore(int id, int battleId) {
-        //room sratus = -1
+        //room status = -1
         userService.quitRoom(battleId);
 
         HashMap<String, Object> room = userService.selectRoomById(battleId);
