@@ -3,10 +3,7 @@ package com.example.demo.controller.battle;
 import com.example.demo.service.QuestionService;
 import com.example.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 
@@ -25,7 +22,7 @@ public class BattleController {
     }
 
     @RequestMapping(path = "/battle/new")
-    public Battle createNewBattle(int id) {
+    public Battle createNewBattle(@RequestParam int id) {
         int roomId = userService.insertIntoRoom(id);
         questionService.insertQuestionsInRoom(roomId);
 
@@ -35,14 +32,14 @@ public class BattleController {
         return battle;
     }
 
-    private boolean isCreator(int userId, int battleId) {
+    private boolean isCreator(@RequestParam int userId, @RequestParam int battleId) {
         HashMap<String, Object> room = userService.selectRoomById(battleId);
         Number hostId = (Number) room.get("hostId");
         return hostId.intValue() == userId;
     }
 
     @RequestMapping(path = "/battle/saveScore")
-    public HashMap<String, Object> saveScore(int id, int battleId) {
+    public HashMap<String, Object> saveScore(@RequestParam int id, @RequestParam int battleId) {
         //room status = -1
         userService.quitRoom(battleId);
 
@@ -71,20 +68,20 @@ public class BattleController {
     }
 
     @RequestMapping(path = "/battle/step_in")
-    public Battle stepIn(int id, int battleId) {
+    public Battle stepIn(@RequestParam int id, @RequestParam int battleId) {
         userService.enterRoom(id, battleId);
         HashMap<String, Object> room = userService.selectRoomById(battleId);
         return Battle.fromRoom(room);
     }
 
     @RequestMapping(path = "/battle/refresh")
-    public Battle getBattleInfo(int id) {
+    public Battle getBattleInfo(@RequestParam int id) {
         HashMap<String, Object> room = userService.selectRoomById(id);
         return Battle.fromRoom(room);
     }
 
     @RequestMapping(path = "/battle/questions")
-    public HashMap<String, String> getQuestions(String id) {
+    public HashMap<String, String> getQuestions(@RequestParam String id) {
 
         return new HashMap<String, String>() {
             {
@@ -97,21 +94,21 @@ public class BattleController {
     }
 
     @RequestMapping(path = "/battle/update/credit")
-    public HashMap<String, Object> updateCredit(int user, int battle, int total) {
+    public HashMap<String, Object> updateCredit(@RequestParam int user, @RequestParam int battle, @RequestParam int total) {
         if (isCreator(user, battle)) {
             userService.updateHostScore(total, battle);
         } else {
             userService.updateGuestScore(total, battle);
         }
-        return new HashMap<String,Object>(){
+        return new HashMap<String, Object>() {
             {
                 put("respCode", 1);
-                put("msg","success");
+                put("msg", "success");
             }
         };
     }
 
     @RequestMapping(path = "/battle/update/finish")
-    public void reportFinish(int battleId, int id) {
+    public void reportFinish(@RequestParam int battleId, @RequestParam int id) {
     }
 }

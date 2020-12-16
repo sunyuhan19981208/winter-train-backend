@@ -2,11 +2,11 @@ package com.example.demo.controller;
 
 import com.example.demo.service.QuestionService;
 import com.example.demo.service.UserService;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
@@ -20,7 +20,7 @@ public class RoomController {
     QuestionService questionService;
 
     @RequestMapping(value = "createRoom", produces = {MediaType.APPLICATION_JSON_VALUE})
-    public HashMap<String, Object> createRoom(@Param("hostId") int hostId) {
+    public HashMap<String, Object> createRoom(@RequestParam("hostId") int hostId) {
         int roomId = userService.insertIntoRoom(hostId);
         questionService.insertQuestionsInRoom(roomId);
         return new HashMap<String, Object>() {
@@ -32,7 +32,7 @@ public class RoomController {
     }
 
     @RequestMapping(value = "enterRoom", produces = {MediaType.APPLICATION_JSON_VALUE})
-    public HashMap<String, Object> enterRoom(@Param("roomId") int roomId, @Param("guestId") int guestId) {
+    public HashMap<String, Object> enterRoom(@RequestParam("roomId") int roomId, @RequestParam("guestId") int guestId) {
         HashMap<String, Object> room = userService.selectRoomById(roomId);
         if (room == null) {
             return new HashMap<String, Object>() {
@@ -67,7 +67,7 @@ public class RoomController {
     }
 
     @RequestMapping(value = "quitRoom", produces = {MediaType.APPLICATION_JSON_VALUE})
-    public HashMap<String, Object> quitRoom(@Param("roomId") int roomId) {
+    public HashMap<String, Object> quitRoom(@RequestParam("roomId") int roomId) {
         userService.quitRoom(roomId);
         return new HashMap<String, Object>() {
             {
@@ -78,7 +78,7 @@ public class RoomController {
     }
 
     @RequestMapping(value = "queryRoom", produces = {MediaType.APPLICATION_JSON_VALUE})
-    public HashMap<String, Object> queryRoom(@Param("roomId") int roomId) {
+    public HashMap<String, Object> queryRoom(@RequestParam("roomId") int roomId) {
         HashMap<String, Object> room = userService.selectRoomById(roomId);
 
         HashMap<String, Object> host = userService.selectByUserId(((Number) room.getOrDefault("hostId", -1)).intValue());
@@ -101,7 +101,7 @@ public class RoomController {
     }
 
     @RequestMapping(value = "updateScore", produces = {MediaType.APPLICATION_JSON_VALUE})
-    public HashMap<String, Object> updateScore(@Param("roomId") int roomId, @Param("userId") int userId, @Param("curScore") int curScore) {
+    public HashMap<String, Object> updateScore(@RequestParam("roomId") int roomId, @RequestParam("userId") int userId, @RequestParam("curScore") int curScore) {
         HashMap<String, Object> room = userService.selectRoomById(roomId);
         if ((int) room.get("roomStatus") == 2) return new HashMap<String, Object>() {
             {
@@ -123,7 +123,7 @@ public class RoomController {
     }
 
     @RequestMapping(value = "endGame", produces = {MediaType.APPLICATION_JSON_VALUE})
-    public HashMap<String, Object> endGame(@Param("roomId") int roomId) {
+    public HashMap<String, Object> endGame(@RequestParam("roomId") int roomId) {
         userService.endGame(roomId);
         return new HashMap<String, Object>() {
             {

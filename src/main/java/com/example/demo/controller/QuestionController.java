@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
@@ -20,7 +21,7 @@ public class QuestionController {
     QuestionService questionService;
 
     @RequestMapping(value = "getQuestions", produces = {MediaType.APPLICATION_JSON_VALUE})
-    public HashMap<String, Object> getQuestions(@Param("roomId") int roomId) {
+    public HashMap<String, Object> getQuestions(@RequestParam("roomId") int roomId) {
 
         //TODO
 

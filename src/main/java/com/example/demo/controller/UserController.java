@@ -1,15 +1,10 @@
 package com.example.demo.controller;
 
 import com.example.demo.service.UserService;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -72,7 +67,7 @@ public class UserController {
     }
 
     @RequestMapping(value = "getRank", produces = {MediaType.APPLICATION_JSON_VALUE})
-    public HashMap<String, Object> getRank(@Param("userId") int userId) {
+    public HashMap<String, Object> getRank(@RequestParam("userId") int userId) {
         //get top 10
         List<HashMap<String, Object>> userRankList10 = userService.getRank();
         //get your info
@@ -131,7 +126,7 @@ public class UserController {
     }
 
     @RequestMapping(value = "changeFace", produces = {MediaType.APPLICATION_JSON_VALUE})
-    public HashMap<String, Object> changeFace(@Param("faceId") int faceId, @Param("userId") int userId) {
+    public HashMap<String, Object> changeFace(@RequestParam("faceId") int faceId, @RequestParam("userId") int userId) {
         if (faceId > 20) return new HashMap<String, Object>() {
             {
                 put("respCode", 2);
@@ -150,7 +145,7 @@ public class UserController {
     }
 
     @RequestMapping(value = "changeUsername", produces = {MediaType.APPLICATION_JSON_VALUE})
-    public HashMap<String, Object> changeUsername(@Param("userId") int userId, @Param("username") String username) {
+    public HashMap<String, Object> changeUsername(@RequestParam("userId") int userId, @RequestParam("username") String username) {
         if (userService.selectByUsername(username) != null)
             return new HashMap<String, Object>() {
                 {
@@ -170,7 +165,7 @@ public class UserController {
     }
 
     @RequestMapping(value = "getAllMyInfo", produces = {MediaType.APPLICATION_JSON_VALUE})
-    public HashMap<String, Object> allMyInfo(@Param("userId") int userId) {
+    public HashMap<String, Object> allMyInfo(@RequestParam("userId") int userId) {
         HashMap<String, Object> user = userService.selectByUserId(userId);
         return new HashMap<String, Object>() {
             {
