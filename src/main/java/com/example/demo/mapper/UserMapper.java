@@ -42,6 +42,10 @@ public interface UserMapper {
     @Update("update room set roomStatus=-1 where roomId=#{roomId}")
     void quitRoom(@Param("roomId") int roomId);
 
+
+    @Update("update room set roomStatus=-3 where roomId=#{roomId}")
+    void finishBattle(@Param("roomId") int roomId);
+
     @Select("select * from room where roomId=#{roomId}")
     HashMap<String, Object> selectRoomById(@Param("roomId") int roomId);
 
@@ -68,4 +72,7 @@ public interface UserMapper {
 
     @Update("update user set winCnt=winCnt+1 where userId=#{userId}")
     void updateWinCnt(@Param("userId") int userId);
+
+    @Update("update user set score=#{newScore} where userId=#{userId}")
+    void updateScoreById(@Param("newScore")int newScore,@Param("userId") int userId);
 }

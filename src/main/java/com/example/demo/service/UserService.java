@@ -19,7 +19,7 @@ public interface UserService {
     void enterRoom(int guestId, int roomId);
 
     void quitRoom(int roomId);
-
+    void finishBattle(int roomId);
     void updateHostScore(int curScore, int roomId);
 
     void updateGuestScore(int roomId, int score);
@@ -33,6 +33,7 @@ public interface UserService {
     void updateFaceId(int faceId, int userId);
 
     void updateUsername(int userId, String username);
+    void updateScoreById(int newScore, int userId);
 
     int getRankOfUserById(int userId);
 }

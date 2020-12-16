@@ -38,33 +38,49 @@ public class BattleController {
         return hostId.intValue() == userId;
     }
 
+    private boolean addUpScoreOf(int userId, int addition) {
+        HashMap<String, Object> user = userService.selectByUserId(userId);
+        if (user == null) {
+            return false;
+        }
+        int score = ((Number) user.getOrDefault("score", 0)).intValue();
+        score += addition;
+        userService.updateScoreById(score, userId);
+        return true;
+    }
+
     @RequestMapping(path = "/battle/saveScore")
     public HashMap<String, Object> saveScore(@RequestParam int id, @RequestParam int battleId) {
-        //room status = -1
-        userService.quitRoom(battleId);
-
         HashMap<String, Object> room = userService.selectRoomById(battleId);
-        Battle battle = Battle.fromRoom(room);
-
-        HashMap<String, Object> user = userService.selectByUserId(id);
-        if (user == null) {
+        if (room != null && ((Number) room.get("roomStatus")).intValue() == -3) {
             return new HashMap<String, Object>() {
                 {
                     put("respCode", 2);
-                    put("errorMsg", "No such user id: " + id);
+                    put("errorMsg", "No such room or is it finished:" + battleId);
                 }
             };
         }
-        Number scoreNumber = (Number) user.getOrDefault("score", 0);
-        int score = scoreNumber.intValue();
-        if (isCreator(id, battleId)) {
-            score += (int) battle.getCreatorCredits();
-            userService.updateHostScore(battleId, score);
-        } else {
-            score += (int) battle.getGuestCredits();
-            userService.updateGuestScore(battleId, score);
-        }
-        return userService.selectByUserId(id);
+        //room status = -3
+        userService.finishBattle(battleId);
+
+
+        Battle battle = Battle.fromRoom(room);
+
+        int creatorId = battle.getCreatorId();
+        int guestId = battle.getGuestId();
+        long creatorCredits = battle.getCreatorCredits();
+        long guestCredits = battle.getGuestCredits();
+        userService.updateScoreById(creatorId, (int) creatorCredits);
+        userService.updateScoreById(guestId, (int) guestCredits);
+
+        HashMap<String, Object> retUser = userService.selectByUserId(id);
+        retUser.remove("password");
+        return new HashMap<String, Object>() {
+            {
+                put("userInfo", retUser);
+                put("respCode", 1);
+            }
+        };
     }
 
     @RequestMapping(path = "/battle/step_in")
@@ -80,18 +96,18 @@ public class BattleController {
         return Battle.fromRoom(room);
     }
 
-    @RequestMapping(path = "/battle/questions")
-    public HashMap<String, String> getQuestions(@RequestParam String id) {
-
-        return new HashMap<String, String>() {
-            {
-                put("apple", "苹果");
-                put("orange", "橙子");
-                put("banana", "香蕉");
-                put("peach", "桃子");
-            }
-        };
-    }
+//    @RequestMapping(path = "/battle/questions")
+//    public HashMap<String, String> getQuestions(@RequestParam String id) {
+//
+//        return new HashMap<String, String>() {
+//            {
+//                put("apple", "苹果");
+//                put("orange", "橙子");
+//                put("banana", "香蕉");
+//                put("peach", "桃子");
+//            }
+//        };
+//    }
 
     @RequestMapping(path = "/battle/update/credit")
     public HashMap<String, Object> updateCredit(@RequestParam int user, @RequestParam int battle, @RequestParam int total) {
@@ -108,7 +124,5 @@ public class BattleController {
         };
     }
 
-    @RequestMapping(path = "/battle/update/finish")
-    public void reportFinish(@RequestParam int battleId, @RequestParam int id) {
-    }
+
 }

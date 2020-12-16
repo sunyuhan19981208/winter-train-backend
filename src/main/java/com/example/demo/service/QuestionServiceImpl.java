@@ -14,8 +14,6 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public List<Question> getQuestionList(int roomId) {
-
-
         String[] stringList = questionMapper.getQuestionsByRoomId(roomId).split(",");
         List<Integer> li = new LinkedList<>();
         for (String it : stringList) li.add(Integer.parseInt(it));

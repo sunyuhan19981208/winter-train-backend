@@ -12,6 +12,15 @@ public class Question {
     String choices;
     String answer;
     String chinese;
+    String action;
+
+    public String getAction() {
+        return action;
+    }
+
+    public void setAction(String action) {
+        this.action = action;
+    }
 
     public int getQid() {
         return qid;
@@ -75,6 +84,7 @@ public class Question {
         }
 
         ret.put("qid", qid);
+        ret.put("action", action);
         ret.put("chinese", chinese);
         ret.put("desp", desp);
         ret.put("answer", answer);
