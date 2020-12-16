@@ -17,6 +17,8 @@ public class JSONStyleExceptionHandler {
     public Map handleAnyException(HttpServletRequest request, Exception e) {
         return new HashMap<String, Object>() {
             {
+                put("error", true);
+                put("respCode", 500);
                 put("request path", request.getServletPath());
                 put("exception message",
                         e instanceof NoSuchElementException ? "Cannot find destination object in database for this request" : e.getMessage());
