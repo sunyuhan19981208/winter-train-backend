@@ -1,6 +1,6 @@
 package com.example.demo.service;
 
-import com.example.demo.bean.Question;
+import com.example.demo.entity.Question;
 import com.example.demo.mapper.QuestionMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,7 +16,7 @@ public class QuestionServiceImpl implements QuestionService {
     public List<Question> getQuestionList(int roomId) {
 
 
-        List<String> stringList = Arrays.asList(questionMapper.getQuestionsByRoomId(roomId).split(","));
+        String[] stringList = questionMapper.getQuestionsByRoomId(roomId).split(",");
         List<Integer> li = new LinkedList<>();
         for (String it : stringList) li.add(Integer.parseInt(it));
         List<Question> res = new LinkedList<>();
@@ -40,12 +40,11 @@ public class QuestionServiceImpl implements QuestionService {
             }
         }
 
-
         StringBuilder res = new StringBuilder();
         for (Integer qid : set) {
             res.append(qid).append(",");
         }
-        ;
+
         res = new StringBuilder(res.substring(0, res.length() - 1));
         System.out.println(res);
         questionMapper.insertQuestionsInRoom(roomId, res.toString());

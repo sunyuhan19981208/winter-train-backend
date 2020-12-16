@@ -1,7 +1,7 @@
 package com.example.demo.service;
 
 
-import com.example.demo.bean.Question;
+import com.example.demo.entity.Question;
 
 import java.util.List;
 

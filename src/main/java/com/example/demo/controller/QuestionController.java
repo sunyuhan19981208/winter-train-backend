@@ -1,6 +1,6 @@
 package com.example.demo.controller;
 
-import com.example.demo.bean.Question;
+import com.example.demo.entity.Question;
 import com.example.demo.service.QuestionService;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;

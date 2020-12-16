@@ -1,4 +1,4 @@
-package com.example.demo.bean;
+package com.example.demo.entity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -68,8 +68,8 @@ public class Question {
         //convert choices
         String[] pairs = choices.split(",");
         ArrayList<String> c = new ArrayList<>();
-        for (int i = 0; i < pairs.length; i++) {
-            c.add(pairs[i].split(":")[1]);
+        for (String pair : pairs) {
+            c.add(pair.split(":")[1]);
         }
 
         ret.put("qid", qid);

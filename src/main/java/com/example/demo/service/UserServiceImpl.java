@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 
 @Service
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
     @Autowired
     UserMapper userMapper;
 
@@ -24,19 +24,22 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public int insertIntoUser(HashMap<String, Object> user) {
-        Integer maxId=userMapper.getMaxUserId();
-        int userId=1;
-        if(maxId!=null)userId=maxId+1;
-        userMapper.insertIntoUser((String)user.get("username"),(String)user.get("password"),userId,(int)user.get("faceId"));
+        Integer userId = userMapper.getMaxUserId();
+        if (userId == null) {
+            userId = 1;
+        } else {
+            userId += 1;
+        }
+
+        userMapper.insertIntoUser((String) user.get("username"), (String) user.get("password"), userId, (int) user.get("faceId"), (Integer) user.getOrDefault("anonymous", 0));
         return userId;
     }
 
     @Override
     public int insertIntoRoom(int hostId) {
-        Integer maxRoomId=userMapper.getMaxRoomId();
-        int roomId=1;
-        if(maxRoomId!=null)roomId=maxRoomId+1;
-        userMapper.insertIntoRoom(roomId,hostId);
+        Integer roomId = userMapper.getMaxRoomId();
+        roomId = roomId == null ? 1 : roomId + 1;
+        userMapper.insertIntoRoom(roomId, hostId);
         return roomId;
     }
 
@@ -47,7 +50,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public void enterRoom(int guestId, int roomId) {
-        userMapper.updateRoom(roomId,guestId);
+        userMapper.updateRoom(roomId, guestId);
     }
 
     @Override
@@ -56,13 +59,13 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public void updateHostScore(int curScore,int roomId) {
-        userMapper.updateHostScore(curScore,roomId);
+    public void updateHostScore(int curScore, int roomId) {
+        userMapper.updateHostScore(curScore, roomId);
     }
 
     @Override
     public void updateGuestScore(int roomId, int score) {
-        userMapper.updateGuestScore(roomId,score);
+        userMapper.updateGuestScore(roomId, score);
     }
 
     @Override
@@ -73,30 +76,35 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public void endGame(int roomId) {
-        HashMap<String,Object>room=userMapper.selectRoomById(roomId);
-        int hostId=(int)room.get("hostId");
-        int guestId=(int)room.get("guestId");
-        int hostScore=(int)room.get("hostScore");
-        int guestScore=(int)room.get("guestScore");
-        userMapper.updateUserScore(hostId,hostScore);
-        userMapper.updateUserScore(guestId,guestScore);
-        if(hostScore>guestScore)userMapper.updateWinCnt(hostId);
-        else if(hostScore<guestScore)userMapper.updateWinCnt(guestId);
+        HashMap<String, Object> room = userMapper.selectRoomById(roomId);
+        int hostId = (int) room.get("hostId");
+        int guestId = (int) room.get("guestId");
+        int hostScore = (int) room.get("hostScore");
+        int guestScore = (int) room.get("guestScore");
+        userMapper.updateUserScore(hostId, hostScore);
+        userMapper.updateUserScore(guestId, guestScore);
+        if (hostScore > guestScore) userMapper.updateWinCnt(hostId);
+        else if (hostScore < guestScore) userMapper.updateWinCnt(guestId);
         userMapper.endGame(roomId);
     }
 
     @Override
-    public void updateUserPswById(int userId,String psw) {
-        userMapper.updateUserPswById(userId,psw);
+    public void updateUserPswById(int userId, String psw) {
+        userMapper.updateUserPswById(userId, psw);
     }
 
     @Override
     public void updateFaceId(int faceId, int userId) {
-        userMapper.updateFaceId(faceId,userId);
+        userMapper.updateFaceId(faceId, userId);
     }
 
     @Override
     public void updateUsername(int userId, String username) {
-        userMapper.updateUsername(userId,username);
+        userMapper.updateUsername(userId, username);
+    }
+
+    @Override
+    public int getRankOfUserById(int userId) {
+        return userMapper.getRankOfUserById(userId);
     }
 }

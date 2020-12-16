@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -72,24 +73,30 @@ public class UserController {
 
     @RequestMapping(value = "getRank", produces = {MediaType.APPLICATION_JSON_VALUE})
     public HashMap<String, Object> getRank(@Param("userId") int userId) {
-        List<HashMap<String, Object>> li = userService.getRank();
-        HashMap<String, Object> yourInfo = new HashMap<>();
-        int cnt = 0;
-        for (HashMap<String, Object> user : li) {
-            cnt++;
-            if ((int) user.get("userId") == userId) break;
-        }
-        yourInfo.put("rank", cnt);
-        yourInfo.put("data", li.get(cnt - 1));
-        List<HashMap<String, Object>> res;
-        if (li.size() > 10) res = li.subList(0, 10);
-        else res = li;
-        return new HashMap<String, Object>() {
+        //get top 10
+        List<HashMap<String, Object>> userRankList10 = userService.getRank();
+        //get your info
+        HashMap<String, Object> yourInfo = userService.selectByUserId(userId);
+        yourInfo.remove("password");
+
+        //get your rank
+        int yourRankNumber = userService.getRankOfUserById(userId);
+
+        //seal your info
+        HashMap<String, Object> yourRankBox = new HashMap<String, Object>() {
             {
-                put("yourRank", yourInfo);
-                put("allRank", res);
+                put("data", yourInfo);
+                put("rank", yourRankNumber);
             }
         };
+
+        return new HashMap<String, Object>() {
+            {
+                put("yourRank", yourRankBox);
+                put("allRank", userRankList10);
+            }
+        };
+
     }
 
     @RequestMapping(value = "resetPassword", produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -175,10 +182,11 @@ public class UserController {
 
     @RequestMapping(path = "/getAnonymousId")
     public HashMap<String, Object> getAnonymousId() {
-        HashMap<String, Object> requestMap = new HashMap<String, Object>(){
+        HashMap<String, Object> requestMap = new HashMap<String, Object>() {
             {
                 put("username", "Guest");
                 put("password", "Guest");
+                put("anonymous", 1);
             }
         };
         int max = 20;
@@ -189,7 +197,7 @@ public class UserController {
         HashMap<String, Object> user = userService.selectByUserId(userId);
         return new HashMap<String, Object>() {
             {
-                put("userId",userId);
+                put("userId", userId);
                 put("userInfo", user);
                 put("respCode", 1);
                 put("msg", "成功");
