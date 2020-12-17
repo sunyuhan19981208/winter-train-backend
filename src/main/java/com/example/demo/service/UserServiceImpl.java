@@ -15,12 +15,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public HashMap<String, Object> selectByUsername(String username) {
-        return userMapper.selectByUsername(username);
+        HashMap<String, Object> ret = userMapper.selectByUsername(username);
+        ret.remove("password");
+        return ret;
     }
 
     @Override
     public HashMap<String, Object> selectByUserId(int userId) {
-        return userMapper.selectByUserId(userId);
+        HashMap<String, Object> ret = userMapper.selectByUserId(userId);
+        ret.remove("password");
+        return ret;
     }
 
     @Override
@@ -58,18 +62,20 @@ public class UserServiceImpl implements UserService {
     public void quitRoom(int roomId) {
         userMapper.quitRoom(roomId);
     }
+
     @Override
-    public void finishBattle(int roomId){
+    public void finishBattle(int roomId) {
         userMapper.finishBattle(roomId);
     }
+
     @Override
     public void updateHostScore(int curScore, int roomId) {
         userMapper.updateHostScore(curScore, roomId);
     }
 
     @Override
-    public void updateScoreById(int newScore, int userId){
-        userMapper.updateScoreById(newScore,userId);
+    public void updateScoreById(int newScore, int userId) {
+        userMapper.updateScoreById(newScore, userId);
     }
 
 

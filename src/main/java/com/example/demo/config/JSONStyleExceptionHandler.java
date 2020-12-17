@@ -22,9 +22,8 @@ public class JSONStyleExceptionHandler {
                 put("error", true);
                 put("respCode", 500);
                 put("request path", request.getServletPath());
-                put("exception message",
-                        e instanceof NoSuchElementException ?
-                                "Cannot find destination object in database for this request" : e.getMessage());
+                put("exception message", e.getMessage());
+                put("exception type", e.getClass().toGenericString());
 
             }
         };
