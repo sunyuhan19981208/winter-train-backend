@@ -52,7 +52,7 @@ public class RoomController {
             return new HashMap<String, Object>() {
                 {
                     put("respCode", 2);
-                    put("msg", "该房间已满园");
+                    put("msg", "该房间已满");
                 }
             };
         } else {

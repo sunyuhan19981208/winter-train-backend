@@ -32,13 +32,16 @@ public class UserController {
                     put("msg", "密码错误");
                 }
             };
-        else return new HashMap<String, Object>() {
+        else{
+            res.remove("password");
+            return new HashMap<String, Object>() {
                 {
                     put("respCode", 1);
                     put("msg", "登录成功");
                     put("data", res);
                 }
             };
+        }
     }
 
     @RequestMapping(value = "register", produces = {MediaType.APPLICATION_JSON_VALUE})

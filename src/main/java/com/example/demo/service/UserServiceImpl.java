@@ -15,15 +15,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public HashMap<String, Object> selectByUsername(String username) {
-        HashMap<String, Object> ret = userMapper.selectByUsername(username);
-        ret.remove("password");
-        return ret;
+        return userMapper.selectByUsername(username);
     }
 
     @Override
     public HashMap<String, Object> selectByUserId(int userId) {
         HashMap<String, Object> ret = userMapper.selectByUserId(userId);
-        ret.remove("password");
+        if(ret!=null){
+            ret.remove("password");
+        }
         return ret;
     }
 

@@ -40,15 +40,14 @@ public class BattleController {
         return hostId.intValue() == userId;
     }
 
-    private boolean addUpScoreOf(int userId, int addition) {
+    private void addUpScoreOf(int userId, int addition) {
         HashMap<String, Object> user = userService.selectByUserId(userId);
         if (user == null) {
-            return false;
+            throw new NoSuchElementException(ResponseMessage.NOT_FOUND+userId);
         }
         int score = ((Number) user.getOrDefault("score", 0)).intValue();
         score += addition;
         userService.updateScoreById(score, userId);
-        return true;
     }
 
     @RequestMapping(path = "/battle/saveScore")
