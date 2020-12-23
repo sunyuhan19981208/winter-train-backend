@@ -27,7 +27,7 @@ public interface UserService {
     List<HashMap<String, Object>> getRank();
 
     void endGame(int roomId);
-
+    void updateWinCnt( int userId);
     void updateUserPswById(int userId, String psw);
 
     void updateFaceId(int faceId, int userId);

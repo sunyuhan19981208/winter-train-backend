@@ -43,7 +43,7 @@ public class BattleController {
     private void addUpScoreOf(int userId, int addition) {
         HashMap<String, Object> user = userService.selectByUserId(userId);
         if (user == null) {
-            throw new NoSuchElementException(ResponseMessage.NOT_FOUND+userId);
+            throw new NoSuchElementException(ResponseMessage.NOT_FOUND + userId);
         }
         int score = ((Number) user.getOrDefault("score", 0)).intValue();
         score += addition;
@@ -53,8 +53,8 @@ public class BattleController {
     @RequestMapping(path = "/battle/saveScore")
     public HashMap<String, Object> saveScore(@RequestParam int id, @RequestParam int battleId) {
         HashMap<String, Object> room = userService.selectRoomById(battleId);
-        if (room==null){
-            throw new NoSuchElementException("Room not found:"+battleId);
+        if (room == null) {
+            throw new NoSuchElementException("Room not found:" + battleId);
         }
         if (((Number) room.get("roomStatus")).intValue() == -3) {
             return new HashMap<String, Object>() {
@@ -79,6 +79,13 @@ public class BattleController {
         } else {
             addUpScoreOf(creatorId, (int) creatorCredits);
             addUpScoreOf(guestId, (int) guestCredits);
+        }
+
+        //累计胜场
+        if (guestCredits > creatorCredits) {
+            userService.updateWinCnt(guestId);
+        } else if (guestCredits < creatorCredits) {
+            userService.updateWinCnt(creatorId);
         }
 
         HashMap<String, Object> retUser = userService.selectByUserId(id);

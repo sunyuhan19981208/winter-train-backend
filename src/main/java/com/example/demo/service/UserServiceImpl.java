@@ -21,7 +21,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public HashMap<String, Object> selectByUserId(int userId) {
         HashMap<String, Object> ret = userMapper.selectByUserId(userId);
-        if(ret!=null){
+        if (ret != null) {
             ret.remove("password");
         }
         return ret;
@@ -102,6 +102,11 @@ public class UserServiceImpl implements UserService {
         if (hostScore > guestScore) userMapper.updateWinCnt(hostId);
         else if (hostScore < guestScore) userMapper.updateWinCnt(guestId);
         userMapper.endGame(roomId);
+    }
+
+    @Override
+    public void updateWinCnt(int userId) {
+        userMapper.updateWinCnt(userId);
     }
 
     @Override
