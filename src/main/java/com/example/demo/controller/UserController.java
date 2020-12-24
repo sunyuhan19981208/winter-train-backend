@@ -182,7 +182,7 @@ public class UserController {
     public HashMap<String, Object> getAnonymousId() {
         HashMap<String, Object> requestMap = new HashMap<String, Object>() {
             {
-                put("username", "Guest");
+                put("username", "匿名用户");
                 put("password", "Guest");
                 put("anonymous", 1);
             }
