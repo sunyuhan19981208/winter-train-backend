@@ -193,6 +193,7 @@ public class UserController {
         if (!requestMap.containsKey("faceId")) requestMap.put("faceId", faceId);
         int userId = userService.insertIntoUser(requestMap);
         HashMap<String, Object> user = userService.selectByUserId(userId);
+        user.put("username", "匿名用户");
         return new HashMap<String, Object>() {
             {
                 put("userId", userId);
