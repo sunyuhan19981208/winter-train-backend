@@ -1,5 +1,6 @@
 package com.example.demo.mapper;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -11,7 +12,7 @@ import java.util.List;
 
 @Repository
 public interface UserMapper {
-    @Select("select count(0)+1 as 'rank'from user where score > ( select score from user where userId= #{userId} )")
+    @Select("select count(0)+1 as 'rank' from user where score > ( select score from user where userId= #{userId} )")
     int getRankOfUserById(@Param("userId") int userId);
 
     @Select("select userId,username,score,faceId,winCnt from user where anonymous = 0 order by score desc limit 10")
@@ -47,7 +48,7 @@ public interface UserMapper {
     void finishBattle(@Param("roomId") int roomId);
 
     @Select("select * from room where roomId=#{roomId}")
-    HashMap<String, Object> selectRoomById(@Param("roomId") int roomId);
+    HashMap<String,Object> selectRoomById(@Param("roomId") int roomId);
 
     @Update("update room set hostScore=#{score},hostIndex=1+hostIndex where roomId=#{roomId}")
     void updateHostScore(@Param("score") int score, @Param("roomId") int roomId);

@@ -1,5 +1,7 @@
 package com.example.demo.controller.battle;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import java.util.HashMap;
 import java.util.Random;
 
@@ -111,17 +113,17 @@ public class Battle {
         this.guestId = guestId;
     }
 
-    public static Battle fromRoom(HashMap<String, Object> room) {
+    public static Battle fromRoom(ObjectNode room) {
         Battle battle = new Battle();
-        battle.setId(((Number) room.getOrDefault("roomId", 0)).intValue());
-        battle.setCreatorId(((Number) room.getOrDefault("hostId", -1)).intValue());
-        battle.setCreatorCredits(((Number) room.getOrDefault("hostScore", 0)).intValue());
-        battle.setCreatorQuestionIndex(((Number) room.getOrDefault("hostIndex", 0)).intValue());
+        battle.setId((Integer) room.get("roomId").asInt(0));
+        battle.setCreatorId( room.get("hostId").asInt(-1));
+        battle.setCreatorCredits( room.get("hostScore").asInt(0));
+        battle.setCreatorQuestionIndex( room.get("hostIndex").asInt(0));
 
-        battle.setGuestId(((Number) room.getOrDefault("guestId", -1)).intValue());
-        battle.setGuestCredits(((Number) room.getOrDefault("guestScore", 0)).intValue());
-        battle.setGuestQuestionIndex(((Number) room.getOrDefault("guestIndex", 0)).intValue());
-        battle.setRoomStatus(((Number)room.getOrDefault("roomStatus", 1)).intValue());
+        battle.setGuestId( room.get("guestId").asInt(-1));
+        battle.setGuestCredits( room.get("guestScore").asInt(0));
+        battle.setGuestQuestionIndex(room.get("guestIndex").asInt(0));
+        battle.setRoomStatus(room.get("roomStatus").asInt(1));
 
         return battle;
     }

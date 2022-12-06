@@ -1,7 +1,8 @@
 package com.example.demo.service;
 
 import com.example.demo.mapper.UserMapper;
-import org.apache.ibatis.annotations.Param;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,7 +29,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public int insertIntoUser(HashMap<String, Object> user) {
+    public int insertIntoUser(String username, String password, int faceId, int anonymous) {
         Integer userId = userMapper.getMaxUserId();
         if (userId == null) {
             userId = 1;
@@ -36,7 +37,7 @@ public class UserServiceImpl implements UserService {
             userId += 1;
         }
 
-        userMapper.insertIntoUser((String) user.get("username"), (String) user.get("password"), userId, (int) user.get("faceId"), (Integer) user.getOrDefault("anonymous", 0));
+        userMapper.insertIntoUser(username, password, userId, faceId, anonymous);
         return userId;
     }
 
@@ -49,8 +50,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public HashMap<String, Object> selectRoomById(int roomId) {
-        return userMapper.selectRoomById(roomId);
+    public ObjectNode selectRoomById(int roomId) {
+        HashMap<String, Object> room = userMapper.selectRoomById(roomId);
+        return new ObjectMapper().valueToTree(room);
     }
 
     @Override
@@ -78,7 +80,6 @@ public class UserServiceImpl implements UserService {
         userMapper.updateScoreById(newScore, userId);
     }
 
-
     @Override
     public void updateGuestScore(int roomId, int score) {
         userMapper.updateGuestScore(roomId, score);
@@ -92,11 +93,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void endGame(int roomId) {
-        HashMap<String, Object> room = userMapper.selectRoomById(roomId);
-        int hostId = (int) room.get("hostId");
-        int guestId = (int) room.get("guestId");
-        int hostScore = (int) room.get("hostScore");
-        int guestScore = (int) room.get("guestScore");
+        HashMap<String, Object> map = userMapper.selectRoomById(roomId);
+        ObjectNode room = new ObjectMapper().valueToTree(map);
+        int hostId = room.get("hostId").asInt();
+        int guestId = room.get("guestId").asInt();
+        int hostScore = room.get("hostScore").asInt();
+        int guestScore = room.get("guestScore").asInt();
         userMapper.updateUserScore(hostId, hostScore);
         userMapper.updateUserScore(guestId, guestScore);
         if (hostScore > guestScore) userMapper.updateWinCnt(hostId);

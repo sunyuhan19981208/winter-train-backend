@@ -3,6 +3,7 @@ package com.example.demo.controller.battle;
 import com.example.demo.config.ResponseMessage;
 import com.example.demo.service.QuestionService;
 import com.example.demo.service.UserService;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,7 +20,8 @@ public class BattleController {
 
     @RequestMapping(path = "/battle/peek")
     public Battle peek(int id) {
-        HashMap<String, Object> room = userService.selectRoomById(id);
+        ObjectNode room = userService.selectRoomById(id);
+
         return Battle.fromRoom(room);
     }
 
@@ -35,9 +37,9 @@ public class BattleController {
     }
 
     private boolean isCreator(@RequestParam int userId, @RequestParam int battleId) {
-        HashMap<String, Object> room = userService.selectRoomById(battleId);
-        Number hostId = (Number) room.get("hostId");
-        return hostId.intValue() == userId;
+        ObjectNode room = userService.selectRoomById(battleId);
+        int hostId = room.get("hostId").asInt();
+        return hostId  == userId;
     }
 
     private void addUpScoreOf(int userId, int addition) {
@@ -52,11 +54,11 @@ public class BattleController {
 
     @RequestMapping(path = "/battle/saveScore")
     public HashMap<String, Object> saveScore(@RequestParam int id, @RequestParam int battleId) {
-        HashMap<String, Object> room = userService.selectRoomById(battleId);
+        ObjectNode room = userService.selectRoomById(battleId);
         if (room == null) {
             throw new NoSuchElementException("Room not found:" + battleId);
         }
-        if (((Number) room.get("roomStatus")).intValue() == -3) {
+        if (( room.get("roomStatus")).asInt() == -3) {
             return new HashMap<String, Object>() {
                 {
                     put("respCode", 2);
@@ -101,13 +103,13 @@ public class BattleController {
     @RequestMapping(path = "/battle/step_in")
     public Battle stepIn(@RequestParam int id, @RequestParam int battleId) {
         userService.enterRoom(id, battleId);
-        HashMap<String, Object> room = userService.selectRoomById(battleId);
+        ObjectNode room = userService.selectRoomById(battleId);
         return Battle.fromRoom(room);
     }
 
     @RequestMapping(path = "/battle/refresh")
     public Battle getBattleInfo(@RequestParam int id) {
-        HashMap<String, Object> room = userService.selectRoomById(id);
+        ObjectNode room = userService.selectRoomById(id);
         return Battle.fromRoom(room);
     }
 

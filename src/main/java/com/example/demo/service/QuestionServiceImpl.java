@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class QuestionServiceImpl implements QuestionService {
@@ -14,32 +15,26 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public List<Question> getQuestionList(int roomId) {
-        String[] stringList = questionMapper.getQuestionsByRoomId(roomId).split(",");
-        List<Integer> li = new LinkedList<>();
-        for (String it : stringList) li.add(Integer.parseInt(it));
-        List<Question> res = new LinkedList<>();
-        for (Integer qid : li) {
-            res.add(questionMapper.selectQuestionById(qid));
+        String qs = questionMapper.getQuestionsByRoomId(roomId);
+        if (qs == null) {
+            return Collections.EMPTY_LIST;
         }
-        return res;
+        String[] stringList = qs.split(",");
+
+        return Arrays.stream(stringList)
+                .mapToInt(Integer::parseInt)
+                .mapToObj(questionMapper::selectQuestionById)
+                .collect(Collectors.toList());
     }
 
     @Override
     public void insertQuestionsInRoom(int roomId) {
-        int qSize = questionMapper.getSize();
-        int min = 1;
-        List<Integer> set = new ArrayList<>(10);
-        Random random = new Random(System.currentTimeMillis());
-
-        while (set.size() < 10) {
-            int i = random.nextInt(qSize) + 1;
-            if (!set.contains(i)) {
-                set.add(i);
-            }
-        }
+        int amount = 10;
+        Set<Question> set = questionMapper.randomQuestions(amount);
 
         StringBuilder res = new StringBuilder();
-        for (Integer qid : set) {
+        for (Question q : set) {
+            int qid = q.getQid();
             res.append(qid).append(",");
         }
 

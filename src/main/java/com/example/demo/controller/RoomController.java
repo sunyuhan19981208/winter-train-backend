@@ -2,12 +2,10 @@ package com.example.demo.controller;
 
 import com.example.demo.service.QuestionService;
 import com.example.demo.service.UserService;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 
@@ -16,13 +14,38 @@ import java.util.HashMap;
 public class RoomController {
     @Autowired
     UserService userService;
+
     @Autowired
     QuestionService questionService;
 
-    @RequestMapping(value = "createRoom", produces = {MediaType.APPLICATION_JSON_VALUE})
-    public HashMap<String, Object> createRoom(@RequestParam("hostId") int hostId) {
+    //    @GetMapping(
+    //            value = "createRoom",
+    //            produces = {MediaType.APPLICATION_JSON_VALUE})
+    //    public HashMap<String, Object> createRoom(@RequestParam int hostId) {
+    //        int roomId = userService.insertIntoRoom(hostId);
+    //        questionService.insertQuestionsInRoom(roomId);
+    //        return new HashMap<String, Object>() {
+    //            {
+    //                put("respCode", 1);
+    //                put("roomId", roomId);
+    //            }
+    //        };
+    //    }
+
+    /**
+     * 创建一个对战房间。初始化的房间状态是0，guestid是-1，
+     * @param hostId
+     * @return
+     */
+    @GetMapping(
+            value = "createRoom",
+            produces = {MediaType.APPLICATION_JSON_VALUE})
+    public HashMap<String, Object> createRoom(@RequestParam int hostId) {
+
+        System.out.println("creating room.");
         int roomId = userService.insertIntoRoom(hostId);
         questionService.insertQuestionsInRoom(roomId);
+
         return new HashMap<String, Object>() {
             {
                 put("respCode", 1);
@@ -31,9 +54,11 @@ public class RoomController {
         };
     }
 
-    @RequestMapping(value = "enterRoom", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @RequestMapping(
+            value = "enterRoom",
+            produces = {MediaType.APPLICATION_JSON_VALUE})
     public HashMap<String, Object> enterRoom(@RequestParam("roomId") int roomId, @RequestParam("guestId") int guestId) {
-        HashMap<String, Object> room = userService.selectRoomById(roomId);
+        ObjectNode room = userService.selectRoomById(roomId);
         if (room == null) {
             return new HashMap<String, Object>() {
                 {
@@ -41,14 +66,14 @@ public class RoomController {
                     put("msg", "该房间不存在");
                 }
             };
-        } else if (((Number) room.get("roomStatus")).intValue() == -1) {
+        } else if ((room.get("roomStatus")).asInt() == -1) {
             return new HashMap<String, Object>() {
                 {
                     put("respCode", 2);
                     put("msg", "该房间已失效");
                 }
             };
-        } else if (room.get("guestId") != null||room.get("hostId")==null) {
+        } else if (room.get("guestId").asInt() != -1 || room.get("hostId") == null) {
             return new HashMap<String, Object>() {
                 {
                     put("respCode", 2);
@@ -66,7 +91,9 @@ public class RoomController {
         }
     }
 
-    @RequestMapping(value = "quitRoom", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @RequestMapping(
+            value = "quitRoom",
+            produces = {MediaType.APPLICATION_JSON_VALUE})
     public HashMap<String, Object> quitRoom(@RequestParam("roomId") int roomId) {
         userService.quitRoom(roomId);
         return new HashMap<String, Object>() {
@@ -77,12 +104,15 @@ public class RoomController {
         };
     }
 
-    @RequestMapping(value = "queryRoom", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @RequestMapping(
+            value = "queryRoom",
+            produces = {MediaType.APPLICATION_JSON_VALUE})
     public HashMap<String, Object> queryRoom(@RequestParam("roomId") int roomId) {
-        HashMap<String, Object> room = userService.selectRoomById(roomId);
+        ObjectNode room = userService.selectRoomById(roomId);
 
-        HashMap<String, Object> host = userService.selectByUserId(((Number) room.getOrDefault("hostId", -1)).intValue());
-        HashMap<String, Object> guest = userService.selectByUserId(((Number) room.getOrDefault("guestId", -1)).intValue());
+        HashMap<String, Object> host =
+                userService.selectByUserId(room.get("hostId").asInt(-1));
+        HashMap<String, Object> guest = userService.selectByUserId((room.get("guestId")).asInt(-1));
         if (host != null) {
             host.remove("password");
         }
@@ -90,8 +120,9 @@ public class RoomController {
             guest.remove("password");
         }
 
-        room.put("hostInfo", host);
-        room.put("guestInfo", guest);
+        room.putPOJO("hostInfo", host);
+        room.putPOJO("guestInfo", guest);
+        room.put("hostStatus", 1);
         return new HashMap<String, Object>() {
             {
                 put("respCode", 1);
@@ -100,16 +131,22 @@ public class RoomController {
         };
     }
 
-    @RequestMapping(value = "updateScore", produces = {MediaType.APPLICATION_JSON_VALUE})
-    public HashMap<String, Object> updateScore(@RequestParam("roomId") int roomId, @RequestParam("userId") int userId, @RequestParam("curScore") int curScore) {
-        HashMap<String, Object> room = userService.selectRoomById(roomId);
-        if ((int) room.get("roomStatus") == 2) return new HashMap<String, Object>() {
-            {
-                put("respCode", 2);
-                put("msg", "游戏已结束");
-            }
-        };
-        if (((int) room.get("hostId")) == (userId)) {
+    @RequestMapping(
+            value = "updateScore",
+            produces = {MediaType.APPLICATION_JSON_VALUE})
+    public HashMap<String, Object> updateScore(
+            @RequestParam("roomId") int roomId,
+            @RequestParam("userId") int userId,
+            @RequestParam("curScore") int curScore) {
+        ObjectNode room = userService.selectRoomById(roomId);
+        if (room.get("roomStatus").asInt() == 2)
+            return new HashMap<String, Object>() {
+                {
+                    put("respCode", 2);
+                    put("msg", "游戏已结束");
+                }
+            };
+        if (room.get("hostId").asInt() == (userId)) {
             userService.updateHostScore(curScore, roomId);
         } else {
             userService.updateGuestScore(curScore, roomId);
@@ -122,7 +159,9 @@ public class RoomController {
         };
     }
 
-    @RequestMapping(value = "endGame", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @RequestMapping(
+            value = "endGame",
+            produces = {MediaType.APPLICATION_JSON_VALUE})
     public HashMap<String, Object> endGame(@RequestParam("roomId") int roomId) {
         userService.endGame(roomId);
         return new HashMap<String, Object>() {

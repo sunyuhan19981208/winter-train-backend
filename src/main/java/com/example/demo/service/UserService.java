@@ -1,6 +1,6 @@
 package com.example.demo.service;
 
-import org.apache.ibatis.annotations.Param;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.util.HashMap;
 import java.util.List;
@@ -10,11 +10,11 @@ public interface UserService {
 
     HashMap<String, Object> selectByUserId(int userId);
 
-    int insertIntoUser(HashMap<String, Object> user);
+    int insertIntoUser( String username, String password, int faceId, int anonymous);
 
     int insertIntoRoom(int hostId);
 
-    HashMap<String, Object> selectRoomById(int roomId);
+    ObjectNode selectRoomById(int roomId);
 
     void enterRoom(int guestId, int roomId);
 
